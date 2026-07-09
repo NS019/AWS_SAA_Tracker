@@ -44,7 +44,7 @@ COLUMNS = ["Day", "Topic", "Actual Topic Done", "Neeti Status", "Shweta Status",
 @st.cache_resource
 def get_worksheet():
     """Connects to Google Sheets using service account creds stored in Streamlit secrets.
-    Returns None if secrets aren't configured (falls back to session-only mode)."""
+    Returns (worksheet, None) on success, (None, error_message) on failure."""
     try:
         import gspread
         from google.oauth2.service_account import Credentials
@@ -58,9 +58,9 @@ def get_worksheet():
             ws = sh.worksheet(WORKSHEET_NAME)
         except Exception:
             ws = sh.add_worksheet(title=WORKSHEET_NAME, rows=40, cols=10)
-        return ws
-    except Exception:
-        return None
+        return ws, None
+    except Exception as e:
+        return None, str(e)
 
 
 def default_df():
@@ -101,7 +101,7 @@ def save_data(ws, df):
     ws.update([df.columns.values.tolist()] + df.astype(str).values.tolist())
 
 
-ws = get_worksheet()
+ws, sync_error = get_worksheet()
 sync_ok = ws is not None
 
 st.title("AWS SAA — 30 Day Challenge")
@@ -111,6 +111,8 @@ if sync_ok:
     st.success("✅ Connected to shared Google Sheet — both of you see the same live data.")
 else:
     st.warning("⚠️ Not connected to Google Sheets yet — running in local/session mode (see README to enable shared sync).")
+    with st.expander("Show connection error (for debugging)"):
+        st.code(sync_error or "No secrets found — check Secrets tab is saved.")
 
 if "df" not in st.session_state:
     st.session_state.df = load_data(ws)
