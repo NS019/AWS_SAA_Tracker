@@ -4,6 +4,12 @@ from datetime import date
 
 st.set_page_config(page_title="AWS SAA — 30 Day Tracker", layout="wide")
 
+st.markdown("""
+    <style>
+        .block-container { padding-top: 1.5rem; }
+    </style>
+""", unsafe_allow_html=True)
+
 SHEET_NAME = "AWS_SAA_Tracker_Data"
 WORKSHEET_NAME = "Sheet1"
 
