@@ -47,7 +47,7 @@ WEEK_SUBTITLES = {
     5: "Light Revision",
 }
 
-COLUMNS = ["Day", "Topic", "Actual Topic Done", "Neeti Status", "Shweta Status", "Neeti Date", "Shweta Date", "Notes"]
+COLUMNS = ["Day", "Topic", "Neeti Status", "Shweta Status", "Neeti Date", "Shweta Date", "Notes"]
 
 
 @st.cache_resource
@@ -80,7 +80,6 @@ def default_df():
     return pd.DataFrame({
         "Day": list(range(1, 31)),
         "Topic": [TOPICS[i] if i < len(TOPICS) else "" for i in range(30)],
-        "Actual Topic Done": [""] * 30,
         "Neeti Status": ["Not started"] * 30,
         "Shweta Status": ["Not started"] * 30,
         "Neeti Date": [today] * 30,
@@ -170,18 +169,17 @@ for idx, row in df.iterrows():
         current_week = week_num
         st.markdown(f"### Week {week_num} - {WEEK_SUBTITLES.get(week_num, '')}")
 
-    cols = st.columns([0.4, 2, 1.6, 1.1, 1.1, 1, 1, 1.6])
+    cols = st.columns([0.4, 2, 1.1, 1.1, 1, 1, 3])
     cols[0].write(f"**{row['Day']}**")
     topic = cols[1].text_input("Topic", value=row["Topic"], key=f"topic_{idx}", label_visibility="collapsed")
-    actual = cols[2].selectbox("Actual", ACTUAL_TOPIC_OPTIONS, index=ACTUAL_TOPIC_OPTIONS.index(row["Actual Topic Done"]) if row["Actual Topic Done"] in ACTUAL_TOPIC_OPTIONS else 0, key=f"actual_{idx}", label_visibility="collapsed")
-    neeti = cols[3].selectbox("Neeti", STATUS_OPTIONS, index=STATUS_OPTIONS.index(row["Neeti Status"]) if row["Neeti Status"] in STATUS_OPTIONS else 0, key=f"neeti_{idx}", label_visibility="collapsed")
-    shweta = cols[4].selectbox("Shweta", STATUS_OPTIONS, index=STATUS_OPTIONS.index(row["Shweta Status"]) if row["Shweta Status"] in STATUS_OPTIONS else 0, key=f"shweta_{idx}", label_visibility="collapsed")
-    neeti_date = cols[5].text_input("N.Date", value=row["Neeti Date"], key=f"ndate_{idx}", label_visibility="collapsed")
-    shweta_date = cols[6].text_input("S.Date", value=row["Shweta Date"], key=f"sdate_{idx}", label_visibility="collapsed")
-    notes = cols[7].text_input("Notes", value=row["Notes"], key=f"notes_{idx}", label_visibility="collapsed")
+    neeti = cols[2].selectbox("Neeti", STATUS_OPTIONS, index=STATUS_OPTIONS.index(row["Neeti Status"]) if row["Neeti Status"] in STATUS_OPTIONS else 0, key=f"neeti_{idx}", label_visibility="collapsed")
+    shweta = cols[3].selectbox("Shweta", STATUS_OPTIONS, index=STATUS_OPTIONS.index(row["Shweta Status"]) if row["Shweta Status"] in STATUS_OPTIONS else 0, key=f"shweta_{idx}", label_visibility="collapsed")
+    neeti_date = cols[4].text_input("N.Date", value=row["Neeti Date"], key=f"ndate_{idx}", label_visibility="collapsed")
+    shweta_date = cols[5].text_input("S.Date", value=row["Shweta Date"], key=f"sdate_{idx}", label_visibility="collapsed")
+    notes = cols[6].text_input("Notes", value=row["Notes"], key=f"notes_{idx}", label_visibility="collapsed")
 
     edited_rows.append({
-        "Day": row["Day"], "Topic": topic, "Actual Topic Done": actual,
+        "Day": row["Day"], "Topic": topic,
         "Neeti Status": neeti, "Shweta Status": shweta,
         "Neeti Date": neeti_date, "Shweta Date": shweta_date, "Notes": notes,
     })
