@@ -255,7 +255,7 @@ for idx, row in df.iterrows():
         "Neeti Date": neeti_date, "Shweta Date": shweta_date, "Notes": notes,
     })
 
-    st.markdown("<hr style='margin:4px 0; border:none; border-top:1px solid #bbb;'>", unsafe_allow_html=True)
+    st.markdown("<hr style='margin:4px 0; border:none; border-top:1px solid #1a2b5c;'>", unsafe_allow_html=True)
 
 new_df = pd.DataFrame(edited_rows)
 if not new_df.equals(df):
