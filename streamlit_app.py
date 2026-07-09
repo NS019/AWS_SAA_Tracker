@@ -6,7 +6,7 @@ st.set_page_config(page_title="AWS SAA — 30 Day Tracker", layout="wide")
 
 st.markdown("""
     <style>
-        .block-container { padding-top: 2.2rem; padding-bottom: 1rem; }
+        .block-container { padding-top: 3.2rem; padding-bottom: 1rem; }
         div[data-testid="stAlert"] { padding: 0.3rem 0.7rem; margin-bottom: 0; }
         div[data-testid="stAlert"] p { font-size: 0.78rem; margin: 0; }
         div.stButton > button { padding: 0.15rem 0.7rem; font-size: 0.75rem; margin-top: 4px; }
@@ -128,15 +128,20 @@ with header_col:
     )
 
 with status_col:
-    if sync_ok:
-        st.success("✅ Connected to shared Google Sheet")
-    else:
-        st.warning("⚠️ Not connected — local mode")
+    status_inner, btn_inner = st.columns([2.4, 1])
+    with status_inner:
+        if sync_ok:
+            st.success("✅ Connected to shared Google Sheet")
+        else:
+            st.warning("⚠️ Not connected — local mode")
+    with btn_inner:
+        st.write("")
+        if st.button("🔄 Refresh"):
+            st.session_state.df = load_data(ws)
+            st.rerun()
+    if not sync_ok:
         with st.expander("Show connection error (debug)"):
             st.code(sync_error or "No secrets found — check Secrets tab is saved.")
-    if st.button("🔄 Refresh (pull latest)"):
-        st.session_state.df = load_data(ws)
-        st.rerun()
 
 df = st.session_state.df
 
