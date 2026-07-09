@@ -119,13 +119,30 @@ sync_ok = ws is not None
 if "df" not in st.session_state:
     st.session_state.df = load_data(ws)
 
-header_col, status_col = st.columns([2.2, 1.4])
+header_col, stats_col, status_col = st.columns([1.8, 1.6, 1.6])
 with header_col:
     st.markdown(
         "<div style='font-size:1.5rem; font-weight:700; color:#1a1a1a; line-height:1.2;'>AWS SAA — 30 Day Challenge</div>"
         "<div style='font-size:0.8rem; color:#666; margin-top:2px;'>Solutions Architect Associate · Daily topic tracker for Neeti &amp; Shweta</div>",
         unsafe_allow_html=True,
     )
+
+df = st.session_state.df
+
+with stats_col:
+    stat_html = "<div style='display:flex; gap:22px; margin-top:4px;'>"
+    for person, color in [("Neeti", "#FF6B6B"), ("Shweta", "#4ECDC4")]:
+        done = (df[f"{person} Status"] == "Done").sum()
+        pct = round(done / 30 * 100)
+        stat_html += (
+            f"<div style='flex:1;'>"
+            f"<div style='font-size:0.75rem; color:#555;'>{person} — {done}/30 · {pct}%</div>"
+            f"<div style='height:5px; background:#eee; border-radius:3px; margin-top:3px; overflow:hidden;'>"
+            f"<div style='height:100%; width:{pct}%; background:{color};'></div></div>"
+            f"</div>"
+        )
+    stat_html += "</div>"
+    st.markdown(stat_html, unsafe_allow_html=True)
 
 with status_col:
     status_inner, btn_inner = st.columns([2.4, 1])
@@ -143,17 +160,7 @@ with status_col:
         with st.expander("Show connection error (debug)"):
             st.code(sync_error or "No secrets found — check Secrets tab is saved.")
 
-df = st.session_state.df
-
-col1, col2 = st.columns(2)
-for col, person in zip([col1, col2], ["Neeti", "Shweta"]):
-    done = (df[f"{person} Status"] == "Done").sum()
-    pct = round(done / 30 * 100)
-    with col:
-        st.metric(f"{person}", f"{done}/30 done", f"{pct}%")
-        st.progress(pct / 100)
-
-st.divider()
+st.markdown("<hr style='margin:10px 0;'>", unsafe_allow_html=True)
 
 edited_rows = []
 current_week = None
