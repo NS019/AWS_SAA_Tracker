@@ -6,10 +6,10 @@ st.set_page_config(page_title="AWS SAA — 30 Day Tracker", layout="wide")
 
 st.markdown("""
     <style>
-        .block-container { padding-top: 1rem; padding-bottom: 1rem; }
-        div[data-testid="stAlert"] { padding: 0.4rem 0.8rem; margin-bottom: 0.5rem; }
-        div[data-testid="stAlert"] p { font-size: 0.85rem; margin: 0; }
-        div.stButton > button { padding: 0.2rem 0.8rem; font-size: 0.8rem; }
+        .block-container { padding-top: 2.2rem; padding-bottom: 1rem; }
+        div[data-testid="stAlert"] { padding: 0.3rem 0.7rem; margin-bottom: 0; }
+        div[data-testid="stAlert"] p { font-size: 0.78rem; margin: 0; }
+        div.stButton > button { padding: 0.15rem 0.7rem; font-size: 0.75rem; margin-top: 4px; }
     </style>
 """, unsafe_allow_html=True)
 
@@ -116,26 +116,27 @@ def save_data(ws, df):
 ws, sync_error = get_worksheet()
 sync_ok = ws is not None
 
-st.markdown("#### AWS SAA — 30 Day Challenge")
-st.markdown(
-    "<div style='font-size:0.8rem; color:#666; margin-top:-8px; margin-bottom:6px;'>"
-    "Solutions Architect Associate · Daily topic tracker for Neeti &amp; Shweta</div>",
-    unsafe_allow_html=True,
-)
-
-if sync_ok:
-    st.success("✅ Connected to shared Google Sheet — both of you see the same live data.")
-else:
-    st.warning("⚠️ Not connected to Google Sheets yet — running in local/session mode (see README to enable shared sync).")
-    with st.expander("Show connection error (for debugging)"):
-        st.code(sync_error or "No secrets found — check Secrets tab is saved.")
-
 if "df" not in st.session_state:
     st.session_state.df = load_data(ws)
 
-if st.button("🔄 Refresh (pull latest from Shweta/Neeti)"):
-    st.session_state.df = load_data(ws)
-    st.rerun()
+header_col, status_col = st.columns([2.2, 1.4])
+with header_col:
+    st.markdown(
+        "<div style='font-size:1.5rem; font-weight:700; color:#1a1a1a; line-height:1.2;'>AWS SAA — 30 Day Challenge</div>"
+        "<div style='font-size:0.8rem; color:#666; margin-top:2px;'>Solutions Architect Associate · Daily topic tracker for Neeti &amp; Shweta</div>",
+        unsafe_allow_html=True,
+    )
+
+with status_col:
+    if sync_ok:
+        st.success("✅ Connected to shared Google Sheet")
+    else:
+        st.warning("⚠️ Not connected — local mode")
+        with st.expander("Show connection error (debug)"):
+            st.code(sync_error or "No secrets found — check Secrets tab is saved.")
+    if st.button("🔄 Refresh (pull latest)"):
+        st.session_state.df = load_data(ws)
+        st.rerun()
 
 df = st.session_state.df
 
