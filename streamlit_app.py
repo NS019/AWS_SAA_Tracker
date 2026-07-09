@@ -6,7 +6,10 @@ st.set_page_config(page_title="AWS SAA — 30 Day Tracker", layout="wide")
 
 st.markdown("""
     <style>
-        .block-container { padding-top: 1.5rem; }
+        .block-container { padding-top: 1rem; padding-bottom: 1rem; }
+        div[data-testid="stAlert"] { padding: 0.4rem 0.8rem; margin-bottom: 0.5rem; }
+        div[data-testid="stAlert"] p { font-size: 0.85rem; margin: 0; }
+        div.stButton > button { padding: 0.2rem 0.8rem; font-size: 0.8rem; }
     </style>
 """, unsafe_allow_html=True)
 
@@ -113,8 +116,12 @@ def save_data(ws, df):
 ws, sync_error = get_worksheet()
 sync_ok = ws is not None
 
-st.title("AWS SAA — 30 Day Challenge")
-st.caption("Solutions Architect Associate · Daily topic tracker for Neeti & Shweta")
+st.markdown("#### AWS SAA — 30 Day Challenge")
+st.markdown(
+    "<div style='font-size:0.8rem; color:#666; margin-top:-8px; margin-bottom:6px;'>"
+    "Solutions Architect Associate · Daily topic tracker for Neeti &amp; Shweta</div>",
+    unsafe_allow_html=True,
+)
 
 if sync_ok:
     st.success("✅ Connected to shared Google Sheet — both of you see the same live data.")
