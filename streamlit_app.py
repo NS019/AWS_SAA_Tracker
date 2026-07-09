@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-from datetime import date
+from datetime import date, datetime
 
 st.set_page_config(page_title="AWS SAA — 30 Day Tracker", layout="wide")
 
@@ -112,6 +112,17 @@ def save_data(ws, df):
     ws.update([df.columns.values.tolist()] + df.astype(str).values.tolist())
 
 
+def parse_dmy(s):
+    try:
+        return datetime.strptime(s, "%d-%b-%y").date()
+    except Exception:
+        return date.today()
+
+
+def format_dmy(d):
+    return d.strftime("%d-%b-%y").upper()
+
+
 ws, sync_error = get_worksheet()
 sync_ok = ws is not None
 
@@ -174,8 +185,10 @@ for idx, row in df.iterrows():
     topic = cols[1].text_input("Topic", value=row["Topic"], key=f"topic_{idx}", label_visibility="collapsed")
     neeti = cols[2].selectbox("Neeti", STATUS_OPTIONS, index=STATUS_OPTIONS.index(row["Neeti Status"]) if row["Neeti Status"] in STATUS_OPTIONS else 0, key=f"neeti_{idx}", label_visibility="collapsed")
     shweta = cols[3].selectbox("Shweta", STATUS_OPTIONS, index=STATUS_OPTIONS.index(row["Shweta Status"]) if row["Shweta Status"] in STATUS_OPTIONS else 0, key=f"shweta_{idx}", label_visibility="collapsed")
-    neeti_date = cols[4].text_input("N.Date", value=row["Neeti Date"], key=f"ndate_{idx}", label_visibility="collapsed")
-    shweta_date = cols[5].text_input("S.Date", value=row["Shweta Date"], key=f"sdate_{idx}", label_visibility="collapsed")
+    neeti_date_val = cols[4].date_input("N.Date", value=parse_dmy(row["Neeti Date"]), key=f"ndate_{idx}", label_visibility="collapsed", format="DD-MM-YYYY")
+    shweta_date_val = cols[5].date_input("S.Date", value=parse_dmy(row["Shweta Date"]), key=f"sdate_{idx}", label_visibility="collapsed", format="DD-MM-YYYY")
+    neeti_date = format_dmy(neeti_date_val)
+    shweta_date = format_dmy(shweta_date_val)
     notes = cols[6].text_input("Notes", value=row["Notes"], key=f"notes_{idx}", label_visibility="collapsed")
 
     edited_rows.append({
