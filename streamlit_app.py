@@ -10,12 +10,12 @@ st.markdown("""
         div[data-testid="stAlert"] { padding: 0.3rem 0.7rem; margin-bottom: 0; }
         div[data-testid="stAlert"] p { font-size: 0.78rem; margin: 0; }
         div.stButton > button { padding: 0.15rem 0.7rem; font-size: 0.75rem; margin-top: 4px; }
-        div[class*="_notstarted"] div[data-baseweb="select"],
-        div[class*="_notstarted"] div[data-baseweb="select"] div { background: #ffd9d9 !important; border-color: #e88 !important; }
-        div[class*="_inprogress"] div[data-baseweb="select"],
-        div[class*="_inprogress"] div[data-baseweb="select"] div { background: #fff3b0 !important; border-color: #e0c04a !important; }
-        div[class*="_done"] div[data-baseweb="select"],
-        div[class*="_done"] div[data-baseweb="select"] div { background: #d3f2d3 !important; border-color: #6cbf6c !important; }
+        div[data-testid="stHorizontalBlock"] > div[data-testid="column"]:nth-of-type(3) div[data-baseweb="select"],
+        div[data-testid="stHorizontalBlock"] > div[data-testid="column"]:nth-of-type(3) div[data-baseweb="select"] div,
+        div[data-testid="stHorizontalBlock"] > div[data-testid="column"]:nth-of-type(4) div[data-baseweb="select"],
+        div[data-testid="stHorizontalBlock"] > div[data-testid="column"]:nth-of-type(4) div[data-baseweb="select"] div {
+            background: #fff3b0 !important;
+        }
     </style>
 """, unsafe_allow_html=True)
 
@@ -228,18 +228,10 @@ for idx, row in df.iterrows():
         else:
             topic = current_topic if default_choice == TOPIC_CUSTOM_OPTION else ""
 
-    status_class = {"Not started": "status-notstarted", "In progress": "status-inprogress", "Done": "status-done"}
-    neeti_cls = status_class.get(row["Neeti Status"], "status-notstarted")
-    shweta_cls = status_class.get(row["Shweta Status"], "status-notstarted")
-    status_slug = {"Not started": "notstarted", "In progress": "inprogress", "Done": "done"}
-    neeti_slug = status_slug.get(row["Neeti Status"], "notstarted")
-    shweta_slug = status_slug.get(row["Shweta Status"], "notstarted")
     with cols[2]:
-        with st.container(key=f"neeti{idx}_{neeti_slug}"):
-            neeti = st.selectbox("Neeti", STATUS_OPTIONS, index=STATUS_OPTIONS.index(row["Neeti Status"]) if row["Neeti Status"] in STATUS_OPTIONS else 0, key=f"neeti_{idx}", label_visibility="collapsed")
+        neeti = st.selectbox("Neeti", STATUS_OPTIONS, index=STATUS_OPTIONS.index(row["Neeti Status"]) if row["Neeti Status"] in STATUS_OPTIONS else 0, key=f"neeti_{idx}", label_visibility="collapsed")
     with cols[3]:
-        with st.container(key=f"shweta{idx}_{shweta_slug}"):
-            shweta = st.selectbox("Shweta", STATUS_OPTIONS, index=STATUS_OPTIONS.index(row["Shweta Status"]) if row["Shweta Status"] in STATUS_OPTIONS else 0, key=f"shweta_{idx}", label_visibility="collapsed")
+        shweta = st.selectbox("Shweta", STATUS_OPTIONS, index=STATUS_OPTIONS.index(row["Shweta Status"]) if row["Shweta Status"] in STATUS_OPTIONS else 0, key=f"shweta_{idx}", label_visibility="collapsed")
     neeti_date_val = cols[4].date_input("N.Date", value=parse_dmy(row["Neeti Date"]), key=f"ndate_{idx}", label_visibility="collapsed", format="DD-MM-YYYY")
     shweta_date_val = cols[5].date_input("S.Date", value=parse_dmy(row["Shweta Date"]), key=f"sdate_{idx}", label_visibility="collapsed", format="DD-MM-YYYY")
     neeti_date = format_dmy(neeti_date_val)
