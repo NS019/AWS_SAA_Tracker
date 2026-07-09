@@ -17,17 +17,41 @@ SHEET_NAME = "AWS_SAA_Tracker_Data"
 WORKSHEET_NAME = "Sheet1"
 
 TOPICS = [
-    "IAM basics & shared responsibility", "S3 fundamentals & storage classes", "S3 advanced (lifecycle, replication)",
-    "EC2 fundamentals", "EC2 pricing & purchasing options", "EBS & instance storage",
-    "VPC fundamentals", "VPC advanced (peering, endpoints)", "Route 53 & DNS",
-    "ELB & Auto Scaling Groups", "RDS fundamentals", "Aurora & DynamoDB",
-    "ElastiCache", "Lambda & Serverless basics", "API Gateway",
-    "SQS, SNS, EventBridge", "Step Functions", "CloudFront & Global Accelerator",
-    "ECS, EKS, Fargate", "CloudFormation basics", "Well-Architected Framework",
-    "Security: KMS, Secrets Manager", "Security: WAF, Shield, GuardDuty", "Monitoring: CloudWatch, CloudTrail",
-    "Migration & Transfer services", "Disaster recovery strategies", "Cost optimization strategies",
-    "Advanced networking review", "Practice exam #1 review", "Practice exam #2 + final review",
+    "IAM, Users, Roles, Policies, MFA",
+    "EC2 Basics, AMI, EBS, Security Group",
+    "Load Balancer + Auto Scaling",
+    "S3 Deep Dive + Storage Classes",
+    "VPC Basics, Subnets, NAT, Internet Gateway",
+    "Route 53 & DNS",
+    "Revision + 40 Practice Questions",
+    "RDS + MultiAZ + Read Replica",
+    "DynamoDB",
+    "Lambda + API Gateway",
+    "SQS, SNS, EventBridge",
+    "ECS/EKS Basics",
+    "CloudWatch + CloudTrail",
+    "Revision + 40 Practice Questions",
+    "Well-Architected Framework",
+    "Disaster Recovery + Backup",
+    "Hybrid Architecture + Migration",
+    "Cost Optimization",
+    "High Availability + Fault Tolerance",
+    "Full Mock Test 1",
+    "Analyse Mistakes + Weak Topics",
+    "Full Mock Test 2",
+    "Review Wrong Answers",
+    "High Frequency Scenarios",
+    "Serverless + Networking Revision",
+    "Security + Storage Revision",
+    "Full Mock Test 3",
+    "Final Notes Revision",
+    "Rapid Fire AWS Review",
+    "Relax + Light Revision + Exam Strategy",
 ]
+
+TOPIC_PLACEHOLDER = "Click to add Topic"
+TOPIC_CUSTOM_OPTION = "✏️ Custom / Other (type your own)"
+TOPIC_SELECT_CHOICES = [TOPIC_PLACEHOLDER] + TOPICS + [TOPIC_CUSTOM_OPTION]
 
 ACTUAL_TOPIC_OPTIONS = [
     "", "IAM", "Users", "Roles", "Policies", "MFA", "EC2", "AMI", "EBS", "Security Groups", "Load Balancer",
@@ -182,7 +206,22 @@ for idx, row in df.iterrows():
 
     cols = st.columns([0.4, 2, 1.1, 1.1, 1, 1, 3])
     cols[0].write(f"**{row['Day']}**")
-    topic = cols[1].text_input("Topic", value=row["Topic"], key=f"topic_{idx}", label_visibility="collapsed")
+    with cols[1]:
+        current_topic = row["Topic"]
+        if current_topic in TOPICS:
+            default_choice = current_topic
+        elif current_topic == "":
+            default_choice = TOPIC_PLACEHOLDER
+        else:
+            default_choice = TOPIC_CUSTOM_OPTION
+        choice = st.selectbox("Topic", TOPIC_SELECT_CHOICES, index=TOPIC_SELECT_CHOICES.index(default_choice), key=f"topicsel_{idx}", label_visibility="collapsed")
+        if choice == TOPIC_CUSTOM_OPTION:
+            custom_default = current_topic if default_choice == TOPIC_CUSTOM_OPTION else ""
+            topic = st.text_input("Custom Topic", value=custom_default, key=f"topictxt_{idx}", label_visibility="collapsed", placeholder="Type topic…")
+        elif choice == TOPIC_PLACEHOLDER:
+            topic = ""
+        else:
+            topic = choice
     neeti = cols[2].selectbox("Neeti", STATUS_OPTIONS, index=STATUS_OPTIONS.index(row["Neeti Status"]) if row["Neeti Status"] in STATUS_OPTIONS else 0, key=f"neeti_{idx}", label_visibility="collapsed")
     shweta = cols[3].selectbox("Shweta", STATUS_OPTIONS, index=STATUS_OPTIONS.index(row["Shweta Status"]) if row["Shweta Status"] in STATUS_OPTIONS else 0, key=f"shweta_{idx}", label_visibility="collapsed")
     neeti_date_val = cols[4].date_input("N.Date", value=parse_dmy(row["Neeti Date"]), key=f"ndate_{idx}", label_visibility="collapsed", format="DD-MM-YYYY")
