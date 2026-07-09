@@ -10,6 +10,7 @@ st.markdown("""
         div[data-testid="stAlert"] { padding: 0.3rem 0.7rem; margin-bottom: 0; }
         div[data-testid="stAlert"] p { font-size: 0.78rem; margin: 0; }
         div.stButton > button { padding: 0.15rem 0.7rem; font-size: 0.75rem; margin-top: 4px; }
+        input[aria-label="Custom Topic"] { width: 200% !important; }
     </style>
 """, unsafe_allow_html=True)
 
@@ -103,7 +104,7 @@ def default_df():
     today = date.today().strftime("%d-%b-%y").upper()
     return pd.DataFrame({
         "Day": list(range(1, 31)),
-        "Topic": [TOPICS[i] if i < len(TOPICS) else "" for i in range(30)],
+        "Topic": [""] * 30,
         "Neeti Status": ["Not started"] * 30,
         "Shweta Status": ["Not started"] * 30,
         "Neeti Date": [today] * 30,
@@ -235,6 +236,8 @@ for idx, row in df.iterrows():
         "Neeti Status": neeti, "Shweta Status": shweta,
         "Neeti Date": neeti_date, "Shweta Date": shweta_date, "Notes": notes,
     })
+
+    st.markdown("<hr style='margin:4px 0; border:none; border-top:1px solid #eee;'>", unsafe_allow_html=True)
 
 new_df = pd.DataFrame(edited_rows)
 if not new_df.equals(df):
