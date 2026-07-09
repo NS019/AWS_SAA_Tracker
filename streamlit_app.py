@@ -10,10 +10,9 @@ st.markdown("""
         div[data-testid="stAlert"] { padding: 0.3rem 0.7rem; margin-bottom: 0; }
         div[data-testid="stAlert"] p { font-size: 0.78rem; margin: 0; }
         div.stButton > button { padding: 0.15rem 0.7rem; font-size: 0.75rem; margin-top: 4px; }
-        input[aria-label="Custom Topic"] { width: 480% !important; }
-        .status-notstarted div[data-baseweb="select"] > div { background: #ffd9d9 !important; border-color: #e88 !important; }
-        .status-inprogress div[data-baseweb="select"] > div { background: #ffe3b8 !important; border-color: #e0a04a !important; }
-        .status-done div[data-baseweb="select"] > div { background: #d3f2d3 !important; border-color: #6cbf6c !important; }
+        div[data-baseweb="select"]:has(input[aria-label*="::Not started"]) > div { background: #ffd9d9 !important; border-color: #e88 !important; }
+        div[data-baseweb="select"]:has(input[aria-label*="::In progress"]) > div { background: #ffe3b8 !important; border-color: #e0a04a !important; }
+        div[data-baseweb="select"]:has(input[aria-label*="::Done"]) > div { background: #d3f2d3 !important; border-color: #6cbf6c !important; }
     </style>
 """, unsafe_allow_html=True)
 
@@ -219,29 +218,27 @@ for idx, row in df.iterrows():
         else:
             default_choice = TOPIC_CUSTOM_OPTION
         choice = st.selectbox("Topic", TOPIC_SELECT_CHOICES, index=TOPIC_SELECT_CHOICES.index(default_choice), key=f"topicsel_{idx}", label_visibility="collapsed")
-        if choice == TOPIC_CUSTOM_OPTION:
-            custom_default = current_topic if default_choice == TOPIC_CUSTOM_OPTION else ""
-            topic = st.text_input("Custom Topic", value=custom_default, key=f"topictxt_{idx}", label_visibility="collapsed", placeholder="Type topic…")
-        elif choice == TOPIC_PLACEHOLDER:
+        if choice == TOPIC_PLACEHOLDER:
             topic = ""
-        else:
+        elif choice != TOPIC_CUSTOM_OPTION:
             topic = choice
+        else:
+            topic = current_topic if default_choice == TOPIC_CUSTOM_OPTION else ""
+
     status_class = {"Not started": "status-notstarted", "In progress": "status-inprogress", "Done": "status-done"}
     neeti_cls = status_class.get(row["Neeti Status"], "status-notstarted")
     shweta_cls = status_class.get(row["Shweta Status"], "status-notstarted")
-    with cols[2]:
-        st.markdown(f"<div class='{neeti_cls}'>", unsafe_allow_html=True)
-        neeti = st.selectbox("Neeti", STATUS_OPTIONS, index=STATUS_OPTIONS.index(row["Neeti Status"]) if row["Neeti Status"] in STATUS_OPTIONS else 0, key=f"neeti_{idx}", label_visibility="collapsed")
-        st.markdown("</div>", unsafe_allow_html=True)
-    with cols[3]:
-        st.markdown(f"<div class='{shweta_cls}'>", unsafe_allow_html=True)
-        shweta = st.selectbox("Shweta", STATUS_OPTIONS, index=STATUS_OPTIONS.index(row["Shweta Status"]) if row["Shweta Status"] in STATUS_OPTIONS else 0, key=f"shweta_{idx}", label_visibility="collapsed")
-        st.markdown("</div>", unsafe_allow_html=True)
+    neeti = cols[2].selectbox(f"Neeti::{row['Neeti Status']}", STATUS_OPTIONS, index=STATUS_OPTIONS.index(row["Neeti Status"]) if row["Neeti Status"] in STATUS_OPTIONS else 0, key=f"neeti_{idx}", label_visibility="collapsed")
+    shweta = cols[3].selectbox(f"Shweta::{row['Shweta Status']}", STATUS_OPTIONS, index=STATUS_OPTIONS.index(row["Shweta Status"]) if row["Shweta Status"] in STATUS_OPTIONS else 0, key=f"shweta_{idx}", label_visibility="collapsed")
     neeti_date_val = cols[4].date_input("N.Date", value=parse_dmy(row["Neeti Date"]), key=f"ndate_{idx}", label_visibility="collapsed", format="DD-MM-YYYY")
     shweta_date_val = cols[5].date_input("S.Date", value=parse_dmy(row["Shweta Date"]), key=f"sdate_{idx}", label_visibility="collapsed", format="DD-MM-YYYY")
     neeti_date = format_dmy(neeti_date_val)
     shweta_date = format_dmy(shweta_date_val)
     notes = cols[6].text_input("Notes", value=row["Notes"], key=f"notes_{idx}", label_visibility="collapsed")
+
+    if choice == TOPIC_CUSTOM_OPTION:
+        custom_default = current_topic if default_choice == TOPIC_CUSTOM_OPTION else ""
+        topic = st.text_input("Custom Topic (full width)", value=custom_default, key=f"topictxt_{idx}", label_visibility="collapsed", placeholder="Type topic for this day…")
 
     edited_rows.append({
         "Day": row["Day"], "Topic": topic,
