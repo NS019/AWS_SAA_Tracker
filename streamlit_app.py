@@ -10,9 +10,12 @@ st.markdown("""
         div[data-testid="stAlert"] { padding: 0.3rem 0.7rem; margin-bottom: 0; }
         div[data-testid="stAlert"] p { font-size: 0.78rem; margin: 0; }
         div.stButton > button { padding: 0.15rem 0.7rem; font-size: 0.75rem; margin-top: 4px; }
-        div[class*="_notstarted"] div[data-baseweb="select"] > div { background: #ffd9d9 !important; border-color: #e88 !important; }
-        div[class*="_inprogress"] div[data-baseweb="select"] > div { background: #ffe3b8 !important; border-color: #e0a04a !important; }
-        div[class*="_done"] div[data-baseweb="select"] > div { background: #d3f2d3 !important; border-color: #6cbf6c !important; }
+        div[class*="_notstarted"] div[data-baseweb="select"],
+        div[class*="_notstarted"] div[data-baseweb="select"] div { background: #ffd9d9 !important; border-color: #e88 !important; }
+        div[class*="_inprogress"] div[data-baseweb="select"],
+        div[class*="_inprogress"] div[data-baseweb="select"] div { background: #fff3b0 !important; border-color: #e0c04a !important; }
+        div[class*="_done"] div[data-baseweb="select"],
+        div[class*="_done"] div[data-baseweb="select"] div { background: #d3f2d3 !important; border-color: #6cbf6c !important; }
     </style>
 """, unsafe_allow_html=True)
 
